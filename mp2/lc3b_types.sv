@@ -1,5 +1,6 @@
 package lc3b_types;
 
+typedef logic[127:0] lc3b_cacheline;
 typedef logic [15:0] lc3b_word;
 typedef logic  [7:0] lc3b_byte;
 
