@@ -1,0 +1,12 @@
+// Symbol table
+// Scope level 0:
+//	Symbol Name       Page Address
+//	----------------  ------------
+//	LOOP1             3000
+//	HALT              3008
+//	ONE               3009
+//	DATA2             3009
+//	TWO               3009
+//	EIGHT             3009
+//	RESULT            3009
+//	GOOD              3009
