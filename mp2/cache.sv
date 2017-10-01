@@ -24,9 +24,31 @@ module cache
     output lc3b_cacheline pmem_wdata
 );
 
+logic hit_A;
+logic hit_B;
+logic dbA;
+logic dbB;
+logic vbA;
+logic vbB;
+logic LRU_out;
 
+logic way_sel;
+logic LRU_input;
+logic valid_input;
+logic dirty_input;
 
-cpu cpu
-cache cache
+logic load_LRU;
+logic load_validA;
+logic load_tagA;
+logic load_dirtyA;
+logic load_dataA;
+
+logic load_validB;
+logic load_tagB;
+logic load_dirtyB;
+logic load_dataB;
+
+cache_datapath cache_datapath(.*);
+cache_control cache_control(.*);
 
 endmodule : cache
