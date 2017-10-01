@@ -1,3 +1,5 @@
+import lc3b_types::*;
+
 module cache_datapath (
 	input clk,
 
@@ -45,7 +47,7 @@ lc3b_cacheline cachelinemux_out;
 
 //some assignments
 assign index = mem_address[6:4];
-assign pmem_address = {mem_address[15:7],8'd0};
+assign pmem_address = {mem_address[15:4],4'd0};
 
 
 /******************LRU**********************/
@@ -59,10 +61,7 @@ array #(.width(1)) LRU
 );
 
 /******************way A********************/
-logic hit_A;
-logic vbA;
 lc3b_tag tagA;
-logic dbA;
 logic tag_compare_A_out;
 lc3b_cacheline dataA;
 
@@ -119,10 +118,7 @@ assign hit_A = vbA & tag_compare_A_out;
 
 
 /******************way B********************/
-logic hit_B;
-logic vbB;
 lc3b_tag tagB;
-logic dbB;
 logic tag_compare_B_out;
 lc3b_cacheline dataB;
 
@@ -176,56 +172,56 @@ assign hit_B = vbB & tag_compare_B_out;
 /////////////////////////////////////////////
 
 /************muxes after data array*********/
-mux2 cachelinemux
+mux2 #(.width(128)) cachelinemux
 (
 	.sel(way_sel),
 	.a(dataA),
 	.b(dataB),
-	.f(cachelinemux_out),
+	.f(cachelinemux_out)
 );
 assign pmem_wdata = cachelinemux_out;
 
 mux16 lowerbytemux
 (
 	.sel({mem_address[3:1],1'b0}),
-	.a(cachelinemux_out[0:7]),
-	.b(cachelinemux_out[8:15]),
-	.c(cachelinemux_out[16:23]),
-	.d(cachelinemux_out[24:31]),
-	.e(cachelinemux_out[32:39]),
-	.f(cachelinemux_out[40:47]),
-	.g(cachelinemux_out[48:55]),
-	.h(cachelinemux_out[56:63]),
-	.i(cachelinemux_out[64:71]),
-	.j(cachelinemux_out[72:79]),
-	.k(cachelinemux_out[80:87]),
-	.l(cachelinemux_out[88:95]),
-	.m(cachelinemux_out[96:103]),
-	.n(cachelinemux_out[104:111]),
-	.o(cachelinemux_out[112:119]),
-	.p(cachelinemux_out[119:127]),
+	.a(cachelinemux_out[7:0]),
+	.b(cachelinemux_out[15:8]),
+	.c(cachelinemux_out[23:16]),
+	.d(cachelinemux_out[31:24]),
+	.e(cachelinemux_out[39:32]),
+	.f(cachelinemux_out[47:40]),
+	.g(cachelinemux_out[55:48]),
+	.h(cachelinemux_out[63:56]),
+	.i(cachelinemux_out[71:64]),
+	.j(cachelinemux_out[79:72]),
+	.k(cachelinemux_out[87:80]),
+	.l(cachelinemux_out[95:88]),
+	.m(cachelinemux_out[103:96]),
+	.n(cachelinemux_out[111:104]),
+	.o(cachelinemux_out[119:112]),
+	.p(cachelinemux_out[127:120]),
 	.out(mem_rdata[7:0])
 );
 
 mux16 higherbytemux
 (
 	.sel({mem_address[3:1],1'b1}),
-	.a(cachelinemux_out[0:7]),
-	.b(cachelinemux_out[8:15]),
-	.c(cachelinemux_out[16:23]),
-	.d(cachelinemux_out[24:31]),
-	.e(cachelinemux_out[32:39]),
-	.f(cachelinemux_out[40:47]),
-	.g(cachelinemux_out[48:55]),
-	.h(cachelinemux_out[56:63]),
-	.i(cachelinemux_out[64:71]),
-	.j(cachelinemux_out[72:79]),
-	.k(cachelinemux_out[80:87]),
-	.l(cachelinemux_out[88:95]),
-	.m(cachelinemux_out[96:103]),
-	.n(cachelinemux_out[104:111]),
-	.o(cachelinemux_out[112:119]),
-	.p(cachelinemux_out[119:127]),
+	.a(cachelinemux_out[7:0]),
+	.b(cachelinemux_out[15:8]),
+	.c(cachelinemux_out[23:16]),
+	.d(cachelinemux_out[31:24]),
+	.e(cachelinemux_out[39:32]),
+	.f(cachelinemux_out[47:40]),
+	.g(cachelinemux_out[55:48]),
+	.h(cachelinemux_out[63:56]),
+	.i(cachelinemux_out[71:64]),
+	.j(cachelinemux_out[79:72]),
+	.k(cachelinemux_out[87:80]),
+	.l(cachelinemux_out[95:88]),
+	.m(cachelinemux_out[103:96]),
+	.n(cachelinemux_out[111:104]),
+	.o(cachelinemux_out[119:112]),
+	.p(cachelinemux_out[127:120]),
 	.out(mem_rdata[15:8])
 );
 

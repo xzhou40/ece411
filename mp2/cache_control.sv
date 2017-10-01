@@ -1,8 +1,10 @@
+import lc3b_types::*;
+
 module cache_control (
 	input clk,
 
     /* CPU */
-    output mem_resp,
+    output logic mem_resp,
     input logic mem_read,
     input logic mem_write,
     input lc3b_mem_wmask mem_byte_enable,
@@ -21,10 +23,10 @@ module cache_control (
     input logic vbB,
     input LRU_out,
 
-    output way_sel,
-    output LRU_input,
-    output valid_input,
-    output dirty_input,
+    output logic way_sel,
+    output logic LRU_input,
+    output logic valid_input,
+    output logic dirty_input,
 
     output logic load_LRU,
     output logic load_validA,
@@ -67,7 +69,7 @@ begin : state_actions
     
     /* Actions for each state */
     case(state)
-        idle: /* Do nothing */
+        idle: /* Do nothing */;
         rw: begin
             if (mem_read == 1)
                 //read
@@ -78,7 +80,7 @@ begin : state_actions
                     LRU_input = 1;
                     load_LRU = 1;
                 end
-                else (hit_B == 1)
+                else if (hit_B == 1)
                 begin
                     mem_resp = 1;
                     way_sel = 1;
@@ -86,19 +88,22 @@ begin : state_actions
                     load_LRU = 1;
                 end
                 else /*miss or conflict*/
-                    //do nothing
+                begin
+                end//do nothing
             else
-                //write
+            begin
+            end//write
         end
-        write_back: //add for final
+        write_back: ;//add for final
         read_pmem: begin
+            pmem_read = 1;
             if (LRU_out == 0)
             begin
                 //write to way A
                 load_dataA = 1;
                 valid_input = 1;
                 load_validA = 1;
-                load_tagA = 1;
+                load_tagA = 1; 
             end
             else
             begin
@@ -151,7 +156,15 @@ begin : next_state_logic
                 next_state = read_pmem;
             else
                 next_state = rw;
+        end
         default: next_state = idle; /*go back to idle for unknown states*/
      endcase
 end
+
+always_ff @(posedge clk)
+begin: next_state_assignment
+    /* Assignment of next state on clock edge */
+    state <= next_state;
+end
+
 endmodule : cache_control

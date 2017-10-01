@@ -1,4 +1,4 @@
-module mux16 #(parameter width = 16)
+module mux16 #(parameter width = 8)
 (
 input [3:0] sel,
 input [width-1:0] a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p,
