@@ -39,7 +39,7 @@ logic [1:0] ad;
 logic ldbmux_sel;
 logic offset6mux_sel;
 
-cpu_control control(.*);
-cpu_datapath datapath(.*);
+cpu_control cpu_control(.*);
+cpu_datapath cpu_datapath(.*);
 
 endmodule : cpu
