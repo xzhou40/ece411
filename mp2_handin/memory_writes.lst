@@ -1,0 +1,15 @@
+         ps                           pmem_wdata             
+          delta                          pmem_address        
+                                             pmem_write      
+          0  +0 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx xxxx x 
+          0  +1 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 0000 0 
+    5645000  +3 600d600d600d600d600d600d600d0030 0050 1 
+    5875000  +4 600d600d600d600d600d600d600d0030 0150 0 
+    6205000  +3 baadbaadbaadbaadbaad0130baadbaad 0150 1 
+    6435000  +4 52205220522052205220522000b05220 0050 0 
+    6755000  +3 baadbaadbaadbaadbaad0130baadbaad 0150 1 
+    6985000  +4 baadbaadbaadbaadbaad0130baadbaad 00d0 0 
+    7315000  +3 52205220522052205220522000b05220 00d0 1 
+    7545000  +4 600d600d600d0130600d600d600d0030 0150 0 
+   12545000  +3 600d600d0060600d600d600d600d60fa 0030 1 
+   12775000  +4 600d600d0060600d600d600d600d60fa 00b0 0 
