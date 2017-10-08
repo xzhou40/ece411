@@ -24,6 +24,8 @@ module cache_control (
     input LRU_out,
 
     output logic way_sel,
+    output logic dinmux_sel,
+    output logic pmemmux_sel,
     output logic LRU_input,
     output logic valid_input,
     output logic dirty_input,
@@ -66,6 +68,8 @@ begin : state_actions
     load_dirtyB = 1'b0;
     load_dataB = 1'b0;
     way_sel = 1'b0;
+    dinmux_sel = 1'b0;
+    pmemmux_sel = 1'b0;
     
     /* Actions for each state */
     case(state)
@@ -92,9 +96,52 @@ begin : state_actions
                 end//do nothing
             else
             begin
-            end//write
+                //write
+                if (hit_A == 1)
+                begin
+                    mem_resp = 1;
+                    load_dataA = 1;
+                    LRU_input = 1;
+                    load_LRU = 1;
+                    dinmux_sel = 1;
+                    dirty_input = 1;
+                    load_dirtyA = 1;
+                end
+                else if (hit_B == 1)
+                begin
+                    mem_resp = 1;
+                    load_dataB = 1;
+                    LRU_input = 0;
+                    load_LRU = 1;
+                    dinmux_sel = 1;
+                    dirty_input = 1;
+                    load_dirtyA = 1;
+                end
+                else /*miss or conflict*/
+                begin
+                end//do nothing
+            end
         end
-        write_back: ;//add for final
+        write_back: begin
+            if (LRU_out == 0)
+            begin
+                //write way A back
+                way_sel = 0;
+                pmemmux_sel = 1;
+                pmem_write = 1;
+                dirty_input = 0;
+                load_dirtyA = 1;
+            end
+            else
+            begin
+                //write way B back
+                way_sel = 1;
+                pmemmux_sel = 1;
+                pmem_write = 1;
+                dirty_input = 0;
+                load_dirtyB = 1;
+            end
+        end
         read_pmem: begin
             pmem_read = 1;
             if (LRU_out == 0)

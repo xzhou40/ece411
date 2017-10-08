@@ -26,6 +26,8 @@ module cache_datapath (
     output LRU_out,
 
     input way_sel,
+    input dinmux_sel,
+    input pmemmux_sel,
     input LRU_input,
     input valid_input,
     input dirty_input,
@@ -44,10 +46,28 @@ module cache_datapath (
 
 lc3b_index index;
 lc3b_cacheline cachelinemux_out;
+lc3b_cacheline d_in;
+lc3b_cacheline dinmux_out;
+lc3b_byte writemux00_out;
+lc3b_byte writemux01_out;
+lc3b_byte writemux10_out;
+lc3b_byte writemux11_out;
+lc3b_byte writemux20_out;
+lc3b_byte writemux21_out;
+lc3b_byte writemux30_out;
+lc3b_byte writemux31_out;
+lc3b_byte writemux40_out;
+lc3b_byte writemux41_out;
+lc3b_byte writemux50_out;
+lc3b_byte writemux51_out;
+lc3b_byte writemux60_out;
+lc3b_byte writemux61_out;
+lc3b_byte writemux70_out;
+lc3b_byte writemux71_out;
+lc3b_tag tagmux_out;
 
 //some assignments
 assign index = mem_address[6:4];
-assign pmem_address = {mem_address[15:4],4'd0};
 
 
 /******************LRU**********************/
@@ -98,8 +118,7 @@ array data_store_A
 	.clk,
 	.write(load_dataA),
 	.index,
-	//should change this for final
-	.datain(pmem_rdata),
+	.datain(dinmux_out),
 	.dataout(dataA)
 );
 ////////////////////////////////////
@@ -155,8 +174,7 @@ array data_store_B
 	.clk,
 	.write(load_dataB),
 	.index,
-	//should change this for final
-	.datain(pmem_rdata),
+	.datain(dinmux_out),
 	.dataout(dataB)
 );
 ////////////////////////////////////
@@ -225,5 +243,156 @@ mux16 higherbytemux
 	.out(mem_rdata[15:8])
 );
 
+/************logic for pmem_address************/
+mux2 #(.width(9)) tagmux
+(
+	.sel(way_sel),
+	.a(tagA),
+	.b(tagB),
+	.f(tagmux_out)
+);
+mux2 pmemmux
+(
+	.sel(pmemmux_sel),
+	.a({mem_address[15:4],4'd0}),
+	.b({tagmux_out,mem_address[6:4],4'd0}),
+	.f(pmem_address)
+);
+///////////////////////////////////////////////
+
+/*********input logic for data array*************/
+mux2 #(.width(128)) dinmux
+(
+	.sel(dinmux_sel),
+	.a(pmem_rdata),
+	.b(d_in),
+	.f(dinmux_out)
+);
+
+assign d_in = {writemux71_out,writemux70_out,writemux61_out,writemux60_out
+,writemux51_out,writemux50_out,writemux41_out,writemux40_out
+,writemux31_out,writemux30_out,writemux21_out,writemux20_out
+,writemux11_out,writemux10_out,writemux01_out,writemux00_out};
+
+mux2 #(.width(8)) writemux00
+(
+	.sel(mem_byte_enable[0] & (mem_address[3:1]==3'b000)),
+	.a(cachelinemux_out[7:0]),
+	.b(mem_wdata[7:0]),
+	.f(writemux00_out)
+);
+mux2 #(.width(8)) writemux01
+(
+	.sel(mem_byte_enable[1] & (mem_address[3:1]==3'b000)),
+	.a(cachelinemux_out[15:8]),
+	.b(mem_wdata[15:8]),
+	.f(writemux01_out)
+);
+
+mux2 #(.width(8)) writemux10
+(
+	.sel(mem_byte_enable[0] & (mem_address[3:1]==3'b001)),
+	.a(cachelinemux_out[23:16]),
+	.b(mem_wdata[7:0]),
+	.f(writemux10_out)
+);
+mux2 #(.width(8)) writemux11
+(
+	.sel(mem_byte_enable[1] & (mem_address[3:1]==3'b001)),
+	.a(cachelinemux_out[31:24]),
+	.b(mem_wdata[15:8]),
+	.f(writemux11_out)
+);
+
+mux2 #(.width(8)) writemux20
+(
+	.sel(mem_byte_enable[0] & (mem_address[3:1]==3'b010)),
+	.a(cachelinemux_out[39:32]),
+	.b(mem_wdata[7:0]),
+	.f(writemux20_out)
+);
+mux2 #(.width(8)) writemux21
+(
+	.sel(mem_byte_enable[1] & (mem_address[3:1]==3'b010)),
+	.a(cachelinemux_out[47:40]),
+	.b(mem_wdata[15:8]),
+	.f(writemux21_out)
+);
+
+mux2 #(.width(8)) writemux30
+(
+	.sel(mem_byte_enable[0] & (mem_address[3:1]==3'b011)),
+	.a(cachelinemux_out[55:48]),
+	.b(mem_wdata[7:0]),
+	.f(writemux30_out)
+);
+mux2 #(.width(8)) writemux31
+(
+	.sel(mem_byte_enable[1] & (mem_address[3:1]==3'b011)),
+	.a(cachelinemux_out[63:56]),
+	.b(mem_wdata[15:8]),
+	.f(writemux31_out)
+);
+
+mux2 #(.width(8)) writemux40
+(
+	.sel(mem_byte_enable[0] & (mem_address[3:1]==3'b100)),
+	.a(cachelinemux_out[71:64]),
+	.b(mem_wdata[7:0]),
+	.f(writemux40_out)
+);
+mux2 #(.width(8)) writemux41
+(
+	.sel(mem_byte_enable[1] & (mem_address[3:1]==3'b100)),
+	.a(cachelinemux_out[79:72]),
+	.b(mem_wdata[15:8]),
+	.f(writemux41_out)
+);
+
+mux2 #(.width(8)) writemux50
+(
+	.sel(mem_byte_enable[0] & (mem_address[3:1]==3'b101)),
+	.a(cachelinemux_out[87:80]),
+	.b(mem_wdata[7:0]),
+	.f(writemux50_out)
+);
+mux2 #(.width(8)) writemux51
+(
+	.sel(mem_byte_enable[1] & (mem_address[3:1]==3'b101)),
+	.a(cachelinemux_out[95:88]),
+	.b(mem_wdata[15:8]),
+	.f(writemux51_out)
+);
+
+mux2 #(.width(8)) writemux60
+(
+	.sel(mem_byte_enable[0] & (mem_address[3:1]==3'b110)),
+	.a(cachelinemux_out[103:96]),
+	.b(mem_wdata[7:0]),
+	.f(writemux60_out)
+);
+mux2 #(.width(8)) writemux61
+(
+	.sel(mem_byte_enable[1] & (mem_address[3:1]==3'b110)),
+	.a(cachelinemux_out[111:104]),
+	.b(mem_wdata[15:8]),
+	.f(writemux61_out)
+);
+
+mux2 #(.width(8)) writemux70
+(
+	.sel(mem_byte_enable[0] & (mem_address[3:1]==3'b111)),
+	.a(cachelinemux_out[119:112]),
+	.b(mem_wdata[7:0]),
+	.f(writemux70_out)
+);
+mux2 #(.width(8)) writemux71
+(
+	.sel(mem_byte_enable[1] & (mem_address[3:1]==3'b111)),
+	.a(cachelinemux_out[127:120]),
+	.b(mem_wdata[15:8]),
+	.f(writemux71_out)
+);
+//////////////////////////////////////////////////
 
 endmodule : cache_datapath

@@ -33,7 +33,9 @@ logic vbB;
 logic LRU_out;
 
 logic way_sel;
+logic dinmux_sel;
 logic LRU_input;
+logic pmemmux_sel;
 logic valid_input;
 logic dirty_input;
 
