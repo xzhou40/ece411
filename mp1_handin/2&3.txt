@@ -1,0 +1,30 @@
+2. Description of highlighted blocks
+SEXT11, used for JSR to sign extend offset 11
+PCMUX, modified it to 4to1 mux
+br_adder_mux, 2to1 mux to select which offset pc should use
+pick_and_zext, zero extension block for ldb
+ldbmux, 2to1 mux choosing whether register should receive a byte or a whole word
+regfilemux, modified it to 4to1 mux
+ZEXT8, used for TRAP to unsign extend trap vector
+fillzeros, choose whether the MS 8bits or LS 8bits should be zero for STB
+mdrmux, modified it to 4to1 mux
+marmux, modified it to 4to1 mux
+SEXT5, used for ADD, AND to sign extend immediate
+alumux, modified it to 4to1 mux
+EXT6, signed extension without left shift, used for LDB and STB
+offset6mux, 2to1 mux choosing whether we should use EXT6 or ADJ6
+
+3. I used unit test to test my design. Everythime I finish an instruction, I would write a single little unit test code to test that instruction.
+e.g.
+ORIGIN 4x0000
+SEGMENT  CodeSegment:
+    TRAP Bear
+HALT:                   
+    BRnzp HALT         
+SEGMENT
+DATA:
+Bear:	DATA2 CatchMe
+CatchMe:ADD R5, R5, 5
+	NOT R5, R5
+	RET
+If my TRAP is working correctly, R5 should be xFFFA, and R7 should point to HALT. By checking these two registers when running the simulation. We can make sure if the design is working correctly.
