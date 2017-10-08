@@ -99,6 +99,7 @@ begin : state_actions
                 //write
                 if (hit_A == 1)
                 begin
+                    way_sel = 0;
                     mem_resp = 1;
                     load_dataA = 1;
                     LRU_input = 1;
@@ -109,13 +110,14 @@ begin : state_actions
                 end
                 else if (hit_B == 1)
                 begin
+                    way_sel = 1;
                     mem_resp = 1;
                     load_dataB = 1;
                     LRU_input = 0;
                     load_LRU = 1;
                     dinmux_sel = 1;
                     dirty_input = 1;
-                    load_dirtyA = 1;
+                    load_dirtyB = 1;
                 end
                 else /*miss or conflict*/
                 begin
@@ -147,6 +149,7 @@ begin : state_actions
             if (LRU_out == 0)
             begin
                 //write to way A
+                way_sel = 0;
                 load_dataA = 1;
                 valid_input = 1;
                 load_validA = 1;
@@ -155,6 +158,7 @@ begin : state_actions
             else
             begin
                 //write to way B
+                way_sel = 1;
                 load_dataB = 1;
                 valid_input = 1;
                 load_validB = 1;
