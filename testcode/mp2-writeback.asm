@@ -5,8 +5,10 @@ SEGMENT 0 CODE:
 	LDR R3, R0, l3p
 	LDR R4, R1, 0 ; cache miss, loads line1
 	LDR R5, R2, 0 ; cache miss, loads line2
-	STR R5, R1, 0 ; cache hit,  sets line2 as LRU
+	STB R5, R1, 0 ; cache hit, sets line2 as LRU, write to line1
 	LDR R4, R1, 0 ; cache hit, sets line2 as LRU
+	LDR R5, R2, 0 ; cache hit, sets line1 as LRU
+	LDR R6, R3, 0 ; cache miss, loads and write back line1
 inf:
 	BRnzp inf
 
