@@ -1,27 +1,26 @@
 import lc3b_types::*;
 
-module cache
+module l2_cache
 (
     input clk,
 
     /* outputs to cpu */
     output mem_resp,
-    output lc3b_word mem_rdata,
+    output lc3b_cacheline mem_rdata,
     /* inputs from cpu */
     input mem_read,
     input mem_write,
-    input lc3b_mem_wmask mem_byte_enable,
-    input lc3b_word mem_address,
-    input lc3b_word mem_wdata,
+    input l2_address mem_address,
+    input lc3b_cacheline mem_wdata,
 
     /* inputs from memory */
     input pmem_resp,
-    input lc3b_cacheline pmem_rdata,
+    input l2_cacheline pmem_rdata,
     /* outputs to memory */
     output pmem_read,
     output pmem_write,
     output lc3b_word pmem_address,
-    output lc3b_cacheline pmem_wdata
+    output l2_cacheline pmem_wdata
 );
 
 logic hit_A;
@@ -50,7 +49,7 @@ logic load_tagB;
 logic load_dirtyB;
 logic load_dataB;
 
-cache_datapath cache_datapath(.*);
-cache_control cache_control(.*);
+l2_cache_datapath l2_cache_datapath(.*);
+l2_cache_control l2_cache_control(.*);
 
 endmodule : cache

@@ -1,6 +1,6 @@
 import lc3b_types::*;
 
-module cache
+module dcache
 (
     input clk,
 
@@ -50,7 +50,7 @@ logic load_tagB;
 logic load_dirtyB;
 logic load_dataB;
 
-cache_datapath cache_datapath(.*);
-cache_control cache_control(.*);
+cache_datapath dcache_datapath(.*);
+cache_control dcache_control(.*);
 
 endmodule : cache
